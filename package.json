@@ -1,0 +1,50 @@
+{
+	"name": "mini-grocery-api",
+	"version": "1.0.0",
+	"description": "simple grocery api",
+	"main": "index.js",
+	"scripts": {
+		"dev": "tsx watch serve.ts",
+		"build": "npx tsc",
+		"build:db": "npx prisma generate && npm run build",
+		"start": "node dist/serve.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "Riady",
+	"license": "ISC",
+	"type": "module",
+	"devDependencies": {
+		"@types/cookie-parser": "^1.4.10",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.6",
+		"@types/multer": "^2.3.0",
+		"@types/node": "^26.6.2",
+		"@types/nodemailer": "^8.0.2",
+		"prisma": "^7.10.0",
+		"tsx": "^4.23.15",
+		"typescript": "^7.0.2"
+	},
+	"dependencies": {
+		"@better-auth/prisma-adapter": "^1.7.12",
+		"@prisma/adapter-neon": "^7.10.0",
+		"@prisma/client": "^7.10.0",
+		"@types/midtrans-client": "^1.4.0",
+		"better-auth": "^1.7.12",
+		"cloudinary": "^2.11.0",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.6",
+		"dotenv": "^18.0.3",
+		"express": "^5.2.1",
+		"express-rate-limit": "^8.7.1",
+		"handlebars": "^4.7.10",
+		"helmet": "^8.3.0",
+		"ioredis": "^6.0.0",
+		"midtrans-client": "^1.4.3",
+		"multer": "^2.4.0",
+		"node-cron": "^4.6.0",
+		"nodemailer": "^10.0.12",
+		"winston": "^3.19.0",
+		"zod": "^4.6.5"
+	}
+}
