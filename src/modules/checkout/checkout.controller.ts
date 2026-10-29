@@ -58,8 +58,6 @@ class CheckoutController {
 	) => {
 		const notification = await snapClient.transaction.notification(req.body);
 
-		console.log(notification);
-
 		switch (notification.transaction_status) {
 			case "settlement":
 			case "capture":
