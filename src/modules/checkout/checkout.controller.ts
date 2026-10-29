@@ -3,11 +3,6 @@ import { CheckoutService } from "./checkout.service.ts";
 import { snapClient } from "../../lib/midtrans.ts";
 import OrderRepository from "../order/order.repository.ts";
 import { OrderStatus } from "../../generated/prisma/enums.ts";
-import {
-	APP_PUBLIC_URL,
-	PAYGATE_SERVER_KEY,
-} from "../../configs/env.config.ts";
-import crypto from "crypto";
 
 class CheckoutController {
 	static checkoutWithPaymentGateway = async (
@@ -20,7 +15,6 @@ class CheckoutController {
 		const order = await CheckoutService.processCheckout(customerId);
 
 		const snapParams = {
-			override_notification_urls: [`${APP_PUBLIC_URL}/api/webhooks/midtrans`],
 			transaction_details: {
 				order_id: order.id,
 				gross_amount: order.totalAmount,
@@ -62,32 +56,14 @@ class CheckoutController {
 		res: Response,
 		next: NextFunction,
 	) => {
-		const {
-			order_id,
-			status_code,
-			gross_amount,
-			signature_key,
-			transaction_status,
-			fraud_status,
-		} = req.body;
+		const notification = await snapClient.transaction.notification(req.body);
 
-		console.log(req.body);
+		console.log(notification);
 
-		// 1. Verify Midtrans Signature Locally
-		const payloadToHash = `${order_id}${status_code}${gross_amount}${PAYGATE_SERVER_KEY}`;
-		const calculatedSignature = crypto
-			.createHash("sha512")
-			.update(payloadToHash)
-			.digest("hex");
-
-		if (calculatedSignature !== signature_key) {
-			return res.status(403).json({ message: "Invalid signature key" });
-		}
-
-		switch (transaction_status) {
+		switch (notification.transaction_status) {
 			case "settlement":
 			case "capture":
-				await OrderRepository.update(order_id, {
+				await OrderRepository.update(notification.order_id, {
 					status: OrderStatus.PAID,
 				});
 				break;
@@ -95,8 +71,8 @@ class CheckoutController {
 			case "cancel":
 			case "deny":
 				await CheckoutService.handleFailedCheckout(
-					order_id,
-					transaction_status,
+					notification.order_id,
+					notification.transaction_status,
 				);
 				break;
 		}
